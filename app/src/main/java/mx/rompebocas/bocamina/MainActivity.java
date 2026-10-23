@@ -208,8 +208,13 @@ public final class MainActivity extends Activity implements CourierService.Liste
         try{
             if(code.startsWith("BID1:")){
                 Store.Contact p=Store.readContactCode(code);
-                alert("Confirmación de identidad", "Se agregará a "+p.name+"\nID: "+p.id+"\nHuella: "+CryptoEngine.fingerprint(p.key())+"\n\nCompara esta huella fuera de banda.");
-                db.saveContact(p);drawContacts();toast("Contacto registrado con clave inmutable");
+                new AlertDialog.Builder(this).setTitle("Verificar identidad de "+p.name)
+                    .setMessage("ID: "+p.id+"\nHuella SHA-256:\n"+CryptoEngine.fingerprint(p.key())+
+                        "\n\nConfirma la huella directamente con la persona ANTES de confiar en su identidad.")
+                    .setPositiveButton("Verificada: agregar",(dialog,which)->{
+                        try{db.saveContact(p);drawContacts();toast("Identidad vinculada con clave fijada");}
+                        catch(Exception e){failure(e);}
+                    }).setNegativeButton("Cancelar",null).show();
             }else if(code.startsWith("BQR1:")){
                 String full=collector.accept(code);
                 if(full==null){toast("Fragmentos obtenidos: "+collector.progress()+". Escanea el siguiente.");
