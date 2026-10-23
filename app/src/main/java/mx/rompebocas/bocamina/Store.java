@@ -51,7 +51,15 @@ public final class Store extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE contacts (idx TEXT PRIMARY KEY, data BLOB NOT NULL)");
         db.execSQL("CREATE TABLE bundles (idx TEXT PRIMARY KEY, data BLOB NOT NULL)");
     }
-    @Override public void onConfigure(SQLiteDatabase db){super.onConfigure(db);db.execSQL("PRAGMA secure_delete=ON");}
+    @Override public void onConfigure(SQLiteDatabase db){
+        super.onConfigure(db);
+        // secure_delete returns a row. Android SQLiteDatabase.execSQL() rejects row-returning statements.
+        try (Cursor cursor = db.rawQuery("PRAGMA secure_delete=ON", null)) {
+            if (!cursor.moveToFirst() || cursor.getInt(0) != 1) {
+                throw new IllegalStateException("No se pudo activar el borrado seguro SQLite");
+            }
+        }
+    }
     @Override public void onUpgrade(SQLiteDatabase db,int oldVersion,int newVersion){throw new IllegalStateException("Requiere migración cifrada explícita");}
     private String table(String name){if(!"state".equals(name)&&!"contacts".equals(name)&&!"bundles".equals(name))throw new IllegalArgumentException();return name;}
     private String index(String t,String id) throws Exception{return vault.index("bocamina/"+t,id);}
