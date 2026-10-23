@@ -29,7 +29,7 @@ public final class MainActivity extends Activity implements CourierService.Liste
     private final QrCarrier.Collector collector=new QrCarrier.Collector();
     private Runnable qrTick;
     private String tab="mina";
-    @Override public void onCreate(Bundle bundle){super.onCreate(bundle);
+    @Override public void onCreate(android.os.Bundle bundle){super.onCreate(bundle);
         getWindow().setStatusBarColor(BG);getWindow().setNavigationBarColor(BG);
         if(Build.VERSION.SDK_INT>=30)getWindow().setDecorFitsSystemWindows(false);
         else getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
